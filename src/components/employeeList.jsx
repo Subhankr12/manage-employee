@@ -1,6 +1,8 @@
 import React from "react";
 
-export default () => {
+export default (props) => {
+  const { employees } = props;
+
   return (
     <div className="container-fluid">
       <div className="row">
@@ -10,11 +12,15 @@ export default () => {
               <div className="card-body p-3">
                 <h5 className="text-secondary mb-2">
                   Available:{" "}
-                  <span className="font-weight-bold ml-1 text-dark">08</span>
+                  <span className="font-weight-bold ml-1 text-dark">
+                    {employees.length}
+                  </span>
                 </h5>
                 <h5 className="text-secondary">
                   Total:{" "}
-                  <span className="font-weight-bold ml-1 text-dark">50</span>
+                  <span className="font-weight-bold ml-1 text-dark">
+                    {employees.length}
+                  </span>
                 </h5>
                 ​
                 <button
@@ -38,73 +44,45 @@ export default () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>John Doe</td>
-                    <td>Testing</td>
-                    <td>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck1"
-                          checked="checked"
-                        />
-                        <label
-                          className="custom-control-label"
-                          for="customCheck1"
-                        ></label>
-                      </div>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-outline-info btn-sm"
-                        data-toggle="modal"
-                        data-target="#addEmployeeModal"
-                      >
-                        <i className="fa fa-edit"></i>&nbsp; Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                      >
-                        <i className="fa fa-trash"></i>&nbsp; Delete
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Peter Doe</td>
-                    <td>Deployment</td>
-                    <td>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck2"
-                        />
-                        <label
-                          className="custom-control-label"
-                          for="customCheck2"
-                        ></label>
-                      </div>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-outline-info btn-sm"
-                        data-toggle="modal"
-                        data-target="#addEmployeeModal"
-                      >
-                        <i className="fa fa-edit"></i>&nbsp; Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                      >
-                        <i className="fa fa-trash"></i>&nbsp; Delete
-                      </button>
-                    </td>
-                  </tr>
+                  {employees.map((employee, index) => {
+                    return (
+                      <tr>
+                        <td>{employee.name}</td>
+                        <td>{employee.department}</td>
+                        <td>
+                          <div className="custom-control custom-checkbox">
+                            <input
+                              type="checkbox"
+                              className="custom-control-input"
+                              name={`customCheck${index}`}
+                              id={`customCheck${index}`}
+                              checked={employee.available}
+                            />
+                            <label
+                              className="custom-control-label"
+                              htmlFor={`customCheck${index}`}
+                            ></label>
+                          </div>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn btn-outline-info btn-sm"
+                            data-toggle="modal"
+                            data-target="#addEmployeeModal"
+                          >
+                            <i className="fa fa-edit"></i>&nbsp; Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm"
+                          >
+                            <i className="fa fa-trash"></i>&nbsp; Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -112,121 +90,6 @@ export default () => {
         </div>
       </div>
       {/* <!-- row --> */}
-
-      {/* <!-- Add Employee Modal --> */}
-      <div
-        className="modal fade"
-        id="addEmployeeModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="addEmployeeModal"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered" role="document">
-          <div className="modal-content">
-            <div className="modal-header pt-3 pb-2">
-              <h5 className="modal-title" id="exampleModalCenterTitle">
-                Add Employee
-              </h5>
-              <button
-                type="button"
-                className="close"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div className="modal-body">
-              <form>
-                <div className="form-row ">
-                  <div className="form-group col-md-6">
-                    <label for="" className="mb-1">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id=""
-                      placeholder="Enter"
-                    />
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label for="" className="mb-1">
-                      Gender
-                    </label>
-                    <select
-                      className="form-control"
-                      id="exampleFormControlSelect1"
-                    >
-                      <option>Select</option>
-                      <option>Male</option>
-                      <option>Female</option>
-                    </select>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label for="" className="mb-1">
-                      Age
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id=""
-                      placeholder="Enter"
-                    />
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label for="" className="mb-1">
-                      Designation
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id=""
-                      placeholder="Enter"
-                    />
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label for="" className="mb-1">
-                      Department
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id=""
-                      placeholder="Enter"
-                    />
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label for="" className="mb-1">
-                      Joining Date
-                    </label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      id=""
-                      placeholder=""
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-outline-danger btn-sm"
-                data-dismiss="modal"
-              >
-                Cancel
-              </button>
-              <button type="button" className="btn btn-success btn-sm">
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* <!-- modal --> */}
     </div>
   );
 };
