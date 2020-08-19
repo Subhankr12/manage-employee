@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import EmployeeList from "./employeeList";
+import Noty from "noty";
 
 export default class HomePage extends Component {
   state = {
@@ -9,15 +10,28 @@ export default class HomePage extends Component {
     designation: "",
     department: "",
     joiningDate: "",
+    available: false,
+    buttonId: -1,
     employees: [],
   };
 
-  componentDidMount = () => {
-    let employees = JSON.parse(localStorage.getItem("employees"));
+  componentDidMount = async () => {
+    let employees = await JSON.parse(localStorage.getItem("employees"));
     if (employees !== null) {
+      let sortedEmployees = [];
+      for (let i = 0; i < employees.length; i++) {
+        if (employees[i].available) {
+          sortedEmployees.unshift(employees[i]);
+        } else {
+          sortedEmployees.push(employees[i]);
+        }
+      }
+
       this.setState({
-        employees: employees,
+        employees: sortedEmployees,
       });
+
+      localStorage.setItem("employees", JSON.stringify(sortedEmployees));
     }
   };
 
@@ -27,7 +41,7 @@ export default class HomePage extends Component {
     });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
     const {
       name,
@@ -36,22 +50,107 @@ export default class HomePage extends Component {
       designation,
       department,
       joiningDate,
+      available,
+      buttonId,
     } = this.state;
-    let employees = JSON.parse(localStorage.getItem("employees"));
-    if (employees === null) employees = [];
-    employees.push({
-      name: name,
-      gender: gender,
-      age: age,
-      designation: designation,
-      department: department,
-      joiningDate: joiningDate,
+    let employees = await JSON.parse(localStorage.getItem("employees"));
+
+    if (buttonId == -1) {
+      if (employees === null) employees = [];
+      employees.push({
+        name,
+        gender,
+        age,
+        designation,
+        department,
+        joiningDate,
+        available,
+      });
+      new Noty({
+        text: "Employee Added Successfully!",
+        theme: "bootstrap-v4",
+        type: "success",
+        closeWith: ["button", "click"],
+        timeout: 1500,
+      }).show();
+    } else {
+      employees[buttonId].name = name;
+      employees[buttonId].gender = gender;
+      employees[buttonId].age = age;
+      employees[buttonId].designation = designation;
+      employees[buttonId].department = department;
+      employees[buttonId].joiningDate = joiningDate;
+      new Noty({
+        text: "Employee Updated Successfully!",
+        theme: "bootstrap-v4",
+        type: "success",
+        closeWith: ["button", "click"],
+        timeout: 1500,
+      }).show();
+    }
+
+    this.setState({
+      name: "",
+      gender: "",
+      age: "",
+      designation: "",
+      department: "",
+      joiningDate: "",
       available: false,
+      employees: employees,
     });
+
+    localStorage.setItem("employees", JSON.stringify(employees));
+  };
+
+  handleAvailableChange = (e) => {
+    let index = e.target.id;
+    let employees = JSON.parse(localStorage.getItem("employees"));
+    employees[index].available = !employees[index].available;
     this.setState({
       employees: employees,
     });
+
     localStorage.setItem("employees", JSON.stringify(employees));
+  };
+
+  handleDelete = (e) => {
+    let index = e.target.id;
+    let employees = JSON.parse(localStorage.getItem("employees"));
+    employees.splice(index, 1);
+    this.setState({
+      employees: employees,
+    });
+
+    new Noty({
+      text: "Employee Deleted!",
+      theme: "bootstrap-v4",
+      type: "error",
+      closeWith: ["button", "click"],
+      timeout: 1500,
+    }).show();
+    localStorage.setItem("employees", JSON.stringify(employees));
+  };
+
+  handleUpdate = async (e) => {
+    let index = e.target.id;
+
+    if (index != -1) {
+      let employees = await JSON.parse(localStorage.getItem("employees"));
+      this.setState({
+        name: employees[index].name,
+        gender: employees[index].gender,
+        age: employees[index].age,
+        designation: employees[index].designation,
+        department: employees[index].department,
+        joiningDate: employees[index].joiningDate,
+        available: employees[index].available,
+      });
+    }
+
+    this.setState({
+      buttonId: index,
+    });
   };
 
   render() {
@@ -70,7 +169,7 @@ export default class HomePage extends Component {
         <div
           className="modal fade"
           id="addEmployeeModal"
-          tabindex="-1"
+          tabIndex="-1"
           role="dialog"
           aria-labelledby="addEmployeeModal"
           aria-hidden="true"
@@ -94,7 +193,7 @@ export default class HomePage extends Component {
                 <form>
                   <div className="form-row ">
                     <div className="form-group col-md-6">
-                      <label for="" className="mb-1">
+                      <label htmlFor="" className="mb-1">
                         Name
                       </label>
                       <input
@@ -104,10 +203,11 @@ export default class HomePage extends Component {
                         name="name"
                         value={name}
                         onChange={this.handleChange}
+                        required={true}
                       />
                     </div>
                     <div className="form-group col-md-6">
-                      <label for="" className="mb-1">
+                      <label htmlFor="" className="mb-1">
                         Gender
                       </label>
                       <select
@@ -116,6 +216,7 @@ export default class HomePage extends Component {
                         name="gender"
                         value={gender}
                         onChange={this.handleChange}
+                        required={true}
                       >
                         <option>Select</option>
                         <option>Male</option>
@@ -123,7 +224,7 @@ export default class HomePage extends Component {
                       </select>
                     </div>
                     <div className="form-group col-md-6">
-                      <label for="" className="mb-1">
+                      <label htmlFor="" className="mb-1">
                         Age
                       </label>
                       <input
@@ -133,10 +234,11 @@ export default class HomePage extends Component {
                         name="age"
                         value={age}
                         onChange={this.handleChange}
+                        required
                       />
                     </div>
                     <div className="form-group col-md-6">
-                      <label for="" className="mb-1">
+                      <label htmlFor="" className="mb-1">
                         Designation
                       </label>
                       <input
@@ -146,10 +248,11 @@ export default class HomePage extends Component {
                         name="designation"
                         value={designation}
                         onChange={this.handleChange}
+                        required
                       />
                     </div>
                     <div className="form-group col-md-6">
-                      <label for="" className="mb-1">
+                      <label htmlFor="" className="mb-1">
                         Department
                       </label>
                       <input
@@ -159,10 +262,11 @@ export default class HomePage extends Component {
                         name="department"
                         value={department}
                         onChange={this.handleChange}
+                        required
                       />
                     </div>
                     <div className="form-group col-md-6">
-                      <label for="" className="mb-1">
+                      <label htmlFor="" className="mb-1">
                         Joining Date
                       </label>
                       <input
@@ -172,6 +276,7 @@ export default class HomePage extends Component {
                         name="joiningDate"
                         value={joiningDate}
                         onChange={this.handleChange}
+                        required
                       />
                     </div>
                   </div>
@@ -189,6 +294,7 @@ export default class HomePage extends Component {
                   type="button"
                   className="btn btn-success btn-sm"
                   onClick={this.handleSubmit}
+                  disabled={name && department ? false : true}
                   data-dismiss="modal"
                 >
                   Save
@@ -198,7 +304,12 @@ export default class HomePage extends Component {
           </div>
         </div>
         {/* <!-- modal --> */}
-        <EmployeeList employees={employees} />
+        <EmployeeList
+          employees={employees}
+          handleAvailableChange={this.handleAvailableChange}
+          handleDelete={this.handleDelete}
+          handleUpdate={this.handleUpdate}
+        />
       </div>
     );
   }

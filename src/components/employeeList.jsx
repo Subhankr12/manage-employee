@@ -1,7 +1,17 @@
 import React from "react";
 
 export default (props) => {
-  const { employees } = props;
+  const {
+    employees,
+    handleAvailableChange,
+    handleDelete,
+    handleUpdate,
+  } = props;
+
+  let availableEmployee = 0;
+  for (let i = 0; i < employees.length; i++) {
+    if (employees[i].available) availableEmployee++;
+  }
 
   return (
     <div className="container-fluid">
@@ -13,7 +23,7 @@ export default (props) => {
                 <h5 className="text-secondary mb-2">
                   Available:{" "}
                   <span className="font-weight-bold ml-1 text-dark">
-                    {employees.length}
+                    {availableEmployee}
                   </span>
                 </h5>
                 <h5 className="text-secondary">
@@ -27,6 +37,8 @@ export default (props) => {
                   className="btn btn-primary mt-4"
                   data-toggle="modal"
                   data-target="#addEmployeeModal"
+                  id={-1}
+                  onClick={handleUpdate}
                 >
                   <i className="fa fa-plus"></i>&nbsp; Add Employee
                 </button>
@@ -46,7 +58,7 @@ export default (props) => {
                 <tbody>
                   {employees.map((employee, index) => {
                     return (
-                      <tr>
+                      <tr key={index}>
                         <td>{employee.name}</td>
                         <td>{employee.department}</td>
                         <td>
@@ -54,13 +66,13 @@ export default (props) => {
                             <input
                               type="checkbox"
                               className="custom-control-input"
-                              name={`customCheck${index}`}
-                              id={`customCheck${index}`}
+                              id={index}
                               checked={employee.available}
+                              onChange={handleAvailableChange}
                             />
                             <label
                               className="custom-control-label"
-                              htmlFor={`customCheck${index}`}
+                              htmlFor={index}
                             ></label>
                           </div>
                         </td>
@@ -70,12 +82,16 @@ export default (props) => {
                             className="btn btn-outline-info btn-sm"
                             data-toggle="modal"
                             data-target="#addEmployeeModal"
+                            id={index}
+                            onClick={handleUpdate}
                           >
                             <i className="fa fa-edit"></i>&nbsp; Edit
                           </button>
                           <button
                             type="button"
                             className="btn btn-outline-danger btn-sm"
+                            id={index}
+                            onClick={handleDelete}
                           >
                             <i className="fa fa-trash"></i>&nbsp; Delete
                           </button>
